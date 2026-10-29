@@ -1,36 +1,42 @@
 <!DOCTYPE html>
 <html lang="pt-BR"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
+<meta name="theme-color" id="themeColor" content="#F6F7F9">
+<meta name="description" content="Escaneie documentos, ajuste as páginas e gere PDFs diretamente no celular.">
 <title>ScanPDF</title>
 <style>
 :root{--bg:#101114;--sf:#1B1D22;--ac:#4C8DFF;--tx:#fff;--t2:#A5A8B0;--bt:#2a2d34;--bd:#33363d;--ov:#000e;--pr:#3F7DF0;--prt:#fff;color-scheme:dark}
 :root[data-theme=light]{--bg:#F6F7F9;--sf:#fff;--ac:#1F5EDB;--tx:#101733;--t2:#5d6478;--bt:#eceef3;--bd:#e1e4ea;--ov:#fffe;--pr:#1F5EDB;--prt:#fff;color-scheme:light}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
 html,body{margin:0;height:100%;background:var(--bg);color:var(--tx);font:16px system-ui,sans-serif;overscroll-behavior:none}
-.s{display:none;position:fixed;inset:0;flex-direction:column;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+body{height:100dvh}
+.s{display:none;position:fixed;inset:0;height:100%;height:100dvh;min-height:0;flex-direction:column;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
 .s.on{display:flex}.s.nv{padding-bottom:calc(66px + env(safe-area-inset-bottom))}
 header{padding:14px 64px 14px 16px;display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px}
 header small{white-space:nowrap;margin-left:auto;color:var(--t2);font-weight:400;font-size:14px}
 .main{flex:1;min-height:0;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden}
 .bar{display:flex;gap:8px;padding:10px 12px;justify-content:center;flex-wrap:wrap;background:var(--sf)}
-button{background:var(--bt);color:var(--tx);border:0;border-radius:14px;padding:12px 16px;font:inherit;min-height:48px;cursor:pointer}
+.bar button{min-width:0}
+button{background:var(--bt);color:var(--tx);border:0;border-radius:14px;padding:12px 16px;font:inherit;min-height:48px;cursor:pointer;touch-action:manipulation;-webkit-user-select:none;user-select:none}
 button.p{background:var(--pr);color:var(--prt);font-weight:700}
-button.on{outline:2px solid var(--ac)}button:disabled{opacity:.5}
-button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--ac)}
+button.on{outline:2px solid var(--ac)}button:disabled{opacity:.4;cursor:default}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--ac);outline-offset:2px}
 .hint{text-align:center;color:var(--t2);font-size:14px;padding:6px 12px;background:var(--sf)}
 .mut{color:var(--t2);font-size:14px;line-height:1.45;margin:0}
 .i{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-5px;flex:none}
 button .i+.t{margin-left:6px}
-#th{position:fixed;top:calc(env(safe-area-inset-top) + 10px);right:12px;z-index:8;width:44px;height:44px;min-height:0;padding:0;border-radius:50%;display:grid;place-items:center;background:var(--sf);border:1px solid var(--bd)}
+#th{position:fixed;top:calc(env(safe-area-inset-top) + 10px);right:calc(12px + env(safe-area-inset-right));z-index:8;width:46px;height:46px;min-height:0;padding:0;border-radius:50%;display:grid;place-items:center;background:var(--sf);border:1px solid var(--bd)}
 .lead{color:var(--t2);margin:6px 0 18px;font-size:15px}
 .sec{width:100%;min-height:58px;margin-top:10px;border-radius:16px;display:flex;align-items:center;justify-content:center;gap:10px;background:var(--sf);border:1px solid var(--bd);font-weight:600}
 #none{text-align:center;padding:36px 20px;color:var(--t2)}#none .i{width:56px;height:56px;opacity:.45;margin-bottom:8px}
 .bar.wide button{flex:1}
-#sheet{position:fixed;inset:0;background:#0009;z-index:20;display:flex;align-items:flex-end}#sheet[hidden]{display:none}
-#sheet>div{width:100%;background:var(--sf);border-radius:22px 22px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom));display:grid;gap:10px}#sheet b{font-size:17px;margin-bottom:4px}
+#sheet{position:fixed;inset:0;background:#0009;z-index:20;display:flex;align-items:flex-end;touch-action:manipulation}#sheet[hidden]{display:none}
+#sheet>div{width:100%;max-height:85dvh;overflow:auto;background:var(--sf);border-radius:22px 22px 0 0;padding:18px calc(16px + env(safe-area-inset-right)) calc(18px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left));display:grid;gap:10px;box-shadow:0 -12px 40px #0004}#sheet b{font-size:17px;margin-bottom:4px}
+#sheet button{display:flex;align-items:center;justify-content:center;width:100%}
 /* início */
 .brand{font-size:30px;font-weight:800;letter-spacing:-.5px;padding-top:18px;padding-bottom:4px}.brand span{color:var(--ac)}
-.scroll{display:block!important;overflow:auto;padding:0 16px 20px}
+.scroll{display:block!important;overflow:auto;padding:0 16px 24px;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;scrollbar-width:thin}
 .hero{display:flex;align-items:center;gap:8px;margin:14px 0 18px}
 .hero h1{font-size:25px;margin:0 0 8px;letter-spacing:-.4px}.hero svg{width:120px;flex:none;color:var(--pr)}
 .big{width:100%;min-height:70px;border-radius:18px;font-size:20px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:14px;background:var(--pr);color:var(--prt)}
@@ -52,8 +58,8 @@ h2{font-size:16px;margin:18px 0 10px;display:flex;justify-content:space-between;
 .rt{padding:0;width:100%;aspect-ratio:3/4;position:relative;background:var(--sf);border:1px solid var(--bd);border-radius:12px;overflow:hidden;display:grid;place-items:center}
 .rt img{max-width:100%;max-height:100%}
 .bd{position:absolute;right:6px;bottom:6px;background:#E5483B;color:#fff;font-size:10px;font-weight:700;padding:3px 6px;border-radius:6px}
-.rn{display:flex;align-items:flex-start;gap:2px;margin-top:6px}.rn>div{min-width:0;flex:1}.rn b{display:block;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.rn small{color:var(--t2);font-size:12px}
-.dots{padding:0;width:32px;min-height:32px;background:none;color:var(--t2)}
+.rn{display:flex;align-items:center;gap:2px;margin-top:6px}.rn>div{min-width:0;flex:1}.rn b{display:block;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.rn small{color:var(--t2);font-size:12px}
+.dots{padding:0;width:44px;min-height:44px;flex:none;background:none;color:var(--t2);display:grid;place-items:center}
 #fgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:14px;padding:4px 0}
 #nav{position:fixed;left:0;right:0;bottom:0;display:none;background:var(--sf);border-top:1px solid var(--bd);padding:6px 0 calc(6px + env(safe-area-inset-bottom));z-index:7}
 #nav button{flex:1;background:none;border-radius:0;min-height:52px;display:grid;justify-items:center;gap:2px;font-size:12px;color:var(--t2);padding:4px}
@@ -61,22 +67,63 @@ h2{font-size:16px;margin:18px 0 10px;display:flex;justify-content:space-between;
 :root:not([data-theme=light]) #nav button.on{color:var(--ac)}
 .seg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 /* páginas, câmera, recorte, edição */
-#pages .main{display:block;overflow:auto}
-#grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;padding:12px}
-.th{position:relative;background:var(--sf);border-radius:12px;border:2px solid transparent;overflow:hidden;aspect-ratio:3/4;display:flex;align-items:center;justify-content:center}
-.th img{max-width:100%;max-height:100%}.th.on{border-color:var(--ac)}
-.th b{position:absolute;left:6px;top:4px;background:#000b;color:#fff;border-radius:8px;padding:0 8px;font-size:13px}
+#pages .main{display:block;overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain}
+#grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:12px;padding:12px}
+.th{position:relative;width:100%;min-height:0;padding:0;background:var(--sf);border-radius:12px;border:2px solid transparent;overflow:hidden;aspect-ratio:3/4;display:flex;align-items:center;justify-content:center}
+.th img{max-width:100%;max-height:100%;pointer-events:none}.th.on{border-color:var(--ac);box-shadow:0 0 0 2px #4C8DFF33}
+.th b{position:absolute;left:6px;top:5px;min-width:26px;text-align:center;background:#000c;color:#fff;border-radius:8px;padding:2px 7px;font-size:13px}.th.on b{background:var(--ac)}
+.page-actions{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;padding:6px 8px;flex-wrap:nowrap;border-top:1px solid var(--bd)}
+.tool{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-width:0;padding:6px 4px;font-size:12px;line-height:1.15}
+.tool .i{width:22px;height:22px}
+.page-actions .tool{min-height:54px}
+.primary-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:8px 12px 10px;flex-wrap:nowrap;border-top:1px solid var(--bd)}
+.primary-actions button{display:flex;align-items:center;justify-content:center;padding:10px 12px;white-space:nowrap}
 #empty{color:var(--t2);text-align:center;padding:60px 28px;line-height:1.5}
-#vid{max-width:100%;max-height:100%;background:#000}#ov{position:absolute;pointer-events:none}
-#cc{touch-action:none;display:block}#pv{max-width:100%;max-height:100%;box-shadow:0 0 0 1px var(--bd)}
-.shut{width:76px;height:76px;border-radius:50%;background:#fff;border:6px solid var(--ac);padding:0}
-.cam-bar{display:flex;align-items:center;justify-content:space-around;padding:12px;background:var(--sf)}
-.row{display:flex;gap:10px;align-items:center;padding:6px 16px;color:var(--t2);font-size:14px}.row input[type=range]{flex:1;accent-color:var(--ac);height:32px}
+#cam .main{background:#000}
+#vid{display:block;width:100%;height:100%;object-fit:contain;background:#000}#ov{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.cam-state{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:28px;text-align:center;background:var(--bg)}
+.cam-state>.i{width:52px;height:52px;color:var(--ac)}.cam-state h2{margin:0;font-size:20px}.cam-state p{max-width:340px}.cam-state button{display:flex;align-items:center;justify-content:center;margin-top:4px}
+#cc{touch-action:none;display:block;border-radius:6px}#cmain{padding:4px}
+#pv{display:block;width:auto;height:auto;max-width:100%;max-height:100%;object-fit:contain;box-shadow:0 0 0 1px var(--bd)}
+.shut{width:74px;height:74px;min-height:0;border-radius:50%;background:#fff;border:6px solid var(--ac);padding:0;justify-self:center;box-shadow:0 2px 12px #0003}
+.cam-bar{display:grid;grid-template-columns:1fr 1fr 90px 1fr 1fr;align-items:center;padding:10px 12px;background:var(--sf)}
+.cam-bar button:not(.shut){width:52px;padding:0;justify-self:center;display:grid;place-items:center}
+.cam-bar>button:nth-child(1){grid-column:1;grid-row:1}.cam-bar>.shut{grid-column:3;grid-row:1}.cam-bar>#fl{grid-column:4;grid-row:1}.cam-bar>button:nth-child(4){grid-column:5;grid-row:1}
+.crop-bar{display:grid;grid-template-columns:48px minmax(0,1fr) auto;gap:8px;padding:8px 12px 10px;flex-wrap:nowrap}
+.crop-bar button{display:flex;align-items:center;justify-content:center;padding:10px 12px;white-space:nowrap}.crop-bar .icon-only{width:48px;padding:0}
+.adjustments{background:var(--sf);padding:4px 0}
+.row{display:flex;gap:8px;align-items:center;min-height:44px;padding:2px 12px;color:var(--t2);font-size:14px}.row>span{width:62px;flex:none}.row output{width:30px;flex:none;text-align:right;color:var(--tx);font-variant-numeric:tabular-nums}.row input[type=range]{flex:1;min-width:0;accent-color:var(--ac);height:40px;margin:0;touch-action:pan-y}
+.edit-tools{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;padding:6px 8px;flex-wrap:nowrap;border-top:1px solid var(--bd)}
+.edit-tools button{min-height:54px;font-size:12px}.edit-tools [data-f].on{outline:0;background:#4C8DFF22;color:var(--ac);box-shadow:inset 0 0 0 2px var(--ac)}
+.confirm-bar{padding:8px 12px 10px;flex-wrap:nowrap;border-top:1px solid var(--bd)}.confirm-bar button{width:100%;display:flex;align-items:center;justify-content:center}
 .form{padding:16px;display:grid;gap:14px;max-width:480px;width:100%;margin:0 auto;align-content:start}
 label{display:grid;gap:6px;color:var(--t2);font-size:14px}
-input[type=text],select{background:var(--sf);color:var(--tx);border:1px solid var(--bd);border-radius:12px;padding:12px;font:inherit;min-height:48px}
-#toast{position:fixed;left:12px;right:12px;top:calc(env(safe-area-inset-top) + 64px);background:var(--ov);border:1px solid var(--ac);padding:12px 14px;border-radius:12px;z-index:9;display:none;font-size:14px}
-@media (prefers-reduced-motion:no-preference){button{transition:transform .1s}button:active{transform:scale(.97)}}
+input[type=text],select{background:var(--sf);color:var(--tx);border:1px solid var(--bd);border-radius:12px;padding:12px;font:inherit;min-height:48px;max-width:100%}
+#edit .main{padding:8px}
+#toast{position:fixed;left:12px;right:12px;top:calc(env(safe-area-inset-top) + 64px);max-width:520px;margin:auto;background:var(--ov);border:1px solid var(--ac);padding:12px 14px;border-radius:12px;z-index:30;display:none;font-size:14px;line-height:1.4;box-shadow:0 8px 30px #0004;pointer-events:none}
+.hint.bad{color:#FF8A80;font-weight:600}
+@media (max-width:359px){
+ header{padding-left:12px;font-size:17px}.scroll{padding-left:12px;padding-right:12px}.hero h1{font-size:23px}
+ .primary-actions,.crop-bar,.confirm-bar{padding-left:8px;padding-right:8px}.primary-actions button{padding-left:8px;padding-right:8px;font-size:14px}
+ .crop-bar{gap:6px}.crop-bar button{padding-left:9px;padding-right:9px;font-size:14px}.tool{font-size:11px}
+ #grid{gap:10px;padding:10px}.cam-bar{padding-left:6px;padding-right:6px}
+}
+@media (max-width:319px){
+ .big{font-size:18px;padding-left:12px;padding-right:12px;gap:10px}.big .i{width:28px;height:28px}
+ .crop-bar{grid-template-columns:48px 48px minmax(0,1fr)}.crop-bar button:nth-child(2) .t{display:none}.crop-bar button:nth-child(2){width:48px;padding:0}.crop-bar .p{justify-self:stretch}
+}
+@media (max-height:500px) and (orientation:landscape){
+ header{padding-top:7px;padding-bottom:7px}.brand{padding-top:8px}.hint{padding-top:4px;padding-bottom:4px;font-size:12px}
+ .cam-bar{padding-top:5px;padding-bottom:5px}.shut{width:58px;height:58px;border-width:4px}.cam-bar button:not(.shut){min-height:44px}
+ #cam .hint{position:absolute;z-index:1;left:50%;bottom:76px;transform:translateX(-50%);width:max-content;max-width:80%;border-radius:10px;background:#000c;color:#fff;pointer-events:none}
+ .adjustments{display:grid;grid-template-columns:1fr 1fr}.edit-tools{padding-top:3px;padding-bottom:3px}.edit-tools button{min-height:46px;flex-direction:row;gap:5px}.confirm-bar{padding-top:5px;padding-bottom:5px}.confirm-bar button{min-height:44px}
+}
+@media (min-width:700px){
+ #home .scroll{padding-left:max(24px,calc((100% - 880px)/2));padding-right:max(24px,calc((100% - 880px)/2))}
+ #grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:16px;padding:16px}.page-actions,.primary-actions{padding-left:max(16px,calc((100% - 880px)/2));padding-right:max(16px,calc((100% - 880px)/2))}
+}
+@media (prefers-reduced-motion:no-preference){button{transition:transform .1s}button:active{transform:scale(.97)}#sheet>div{animation:sheet-in .18s ease-out}@keyframes sheet-in{from{transform:translateY(18px);opacity:.6}}}
+
 </style></head><body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
 <symbol id="i-scan" viewBox="0 0 24 24"><path d="M4 8V4h4M16 4h4v4M20 16v4h-4M8 20H4v-4M4 12h16"/></symbol>
@@ -106,13 +153,13 @@ input[type=text],select{background:var(--sf);color:var(--tx);border:1px solid va
 <symbol id="i-doc" viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6zM14 3v4h4M9 12h6M9 15h6M9 18h4"/></symbol>
 </svg>
 <button id="th" onclick="theme()" aria-label="Alternar modo claro e escuro"><svg class="i"><use href="#i-sun"/></svg></button>
-<div id="sheet" hidden onclick="if(event.target===this)this.hidden=true"><div>
- <b>Adicionar página</b>
+<div id="sheet" hidden role="dialog" aria-modal="true" aria-labelledby="sheetTitle" onclick="if(event.target===this)closeSheet()"><div>
+ <b id="sheetTitle">Adicionar página</b>
  <button class="p" onclick="addCam()"><svg class="i"><use href="#i-cam"/></svg><span class="t">Tirar foto</span></button>
  <button onclick="addImp()"><svg class="i"><use href="#i-img"/></svg><span class="t">Importar da galeria</span></button>
- <button onclick="$('#sheet').hidden=true">Cancelar</button>
+ <button onclick="closeSheet()">Cancelar</button>
 </div></div>
-<div id="toast" role="status"></div>
+<div id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
 <input type="file" id="file" accept="image/jpeg,image/png,image/webp" multiple hidden>
 
 <section id="home" class="s on">
@@ -129,37 +176,43 @@ input[type=text],select{background:var(--sf);color:var(--tx);border:1px solid va
 <section id="pages" class="s">
  <header><button onclick="home()" aria-label="Voltar ao início"><svg class="i"><use href="#i-back"/></svg></button><span id="dn" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span><small id="cnt"></small></header>
  <div class="main"><p id="empty">Documento vazio.<br>Toque em “Adicionar página” para começar.</p><div id="grid"></div></div>
- <div class="bar" id="pb" hidden>
-  <button onclick="mv(-1)" aria-label="Mover para trás"><svg class="i"><use href="#i-l"/></svg></button>
-  <button onclick="mv(1)" aria-label="Mover para frente"><svg class="i"><use href="#i-r"/></svg></button>
-  <button onclick="editSel()"><svg class="i"><use href="#i-edit"/></svg><span class="t">Editar</span></button>
-  <button onclick="del()" aria-label="Excluir página"><svg class="i"><use href="#i-trash"/></svg></button>
+ <div class="bar page-actions" id="pb" hidden aria-label="Ações da página selecionada">
+  <button class="tool" id="mvPrev" onclick="mv(-1)" aria-label="Mover página para trás" title="Mover para trás"><svg class="i"><use href="#i-l"/></svg><span>Recuar</span></button>
+  <button class="tool" id="mvNext" onclick="mv(1)" aria-label="Mover página para frente" title="Mover para frente"><svg class="i"><use href="#i-r"/></svg><span>Avançar</span></button>
+  <button class="tool" onclick="editSel()"><svg class="i"><use href="#i-edit"/></svg><span>Editar</span></button>
+  <button class="tool" onclick="del()" aria-label="Excluir página selecionada"><svg class="i"><use href="#i-trash"/></svg><span>Excluir</span></button>
  </div>
- <div class="bar wide">
-  <button onclick="$('#sheet').hidden=false"><svg class="i"><use href="#i-plus"/></svg><span class="t">Adicionar página</span></button>
+ <div class="bar primary-actions">
+  <button onclick="openSheet()" aria-label="Adicionar página"><svg class="i"><use href="#i-plus"/></svg><span class="t">Adicionar</span></button>
   <button class="p" onclick="openExp()"><svg class="i"><use href="#i-pdf"/></svg><span class="t">Gerar PDF</span></button>
  </div>
 </section>
 
 <section id="cam" class="s">
  <header><button onclick="camBack()" aria-label="Voltar"><svg class="i"><use href="#i-back"/></svg></button>Capturar</header>
- <div class="main"><video id="vid" playsinline muted autoplay></video><canvas id="ov"></canvas></div>
- <div class="hint" id="hint">Posicione o documento dentro da área</div>
+ <div class="main"><video id="vid" playsinline muted autoplay></video><canvas id="ov"></canvas>
+  <div class="cam-state" id="camState" hidden>
+   <svg class="i"><use href="#i-cam"/></svg><h2>Câmera indisponível</h2>
+   <p class="mut" id="camError">Não foi possível acessar a câmera.</p>
+   <button class="p" onclick="$('#file').click()"><svg class="i"><use href="#i-img"/></svg><span class="t">Importar da galeria</span></button>
+  </div>
+ </div>
+ <div class="hint" id="hint" role="status">Posicione o documento dentro da área</div>
  <div class="cam-bar">
-  <button onclick="$('#file').click()" aria-label="Abrir galeria"><svg class="i"><use href="#i-img"/></svg></button>
-  <button class="shut" onclick="snap()" aria-label="Capturar"></button>
-  <button id="fl" onclick="flash()" aria-label="Flash"><svg class="i"><use href="#i-bolt"/></svg></button>
-  <button onclick="flip()" aria-label="Alternar câmera"><svg class="i"><use href="#i-flip"/></svg></button>
+  <button onclick="$('#file').click()" aria-label="Abrir galeria" title="Galeria"><svg class="i"><use href="#i-img"/></svg></button>
+  <button class="shut" id="shut" onclick="snap()" aria-label="Capturar documento" disabled></button>
+  <button id="fl" onclick="flash()" aria-label="Alternar flash" aria-pressed="false" title="Flash"><svg class="i"><use href="#i-bolt"/></svg></button>
+  <button onclick="flip()" aria-label="Alternar câmera" title="Alternar câmera"><svg class="i"><use href="#i-flip"/></svg></button>
  </div>
 </section>
 
 <section id="crop" class="s">
  <header>Ajustar cantos</header>
- <div class="hint">Arraste os quatro pontos até as extremidades do documento.</div>
- <div class="main" id="cmain"><canvas id="cc"></canvas></div>
- <div class="bar">
-  <button onclick="cropBack()"><svg class="i"><use href="#i-back"/></svg><span class="t">Voltar</span></button>
-  <button onclick="redetect()"><svg class="i"><use href="#i-reset"/></svg><span class="t">Redefinir cantos</span></button>
+ <div class="hint" id="cropHint" role="status">Arraste os pontos até os cantos. Use a lupa para ajustar.</div>
+ <div class="main" id="cmain"><canvas id="cc" aria-label="Área de ajuste dos cantos do documento"></canvas></div>
+ <div class="bar crop-bar">
+  <button class="icon-only" onclick="cropBack()" aria-label="Cancelar ajuste e voltar" title="Voltar"><svg class="i"><use href="#i-back"/></svg></button>
+  <button onclick="redetect()" aria-label="Detectar cantos novamente"><svg class="i"><use href="#i-reset"/></svg><span class="t">Redefinir</span></button>
   <button class="p" onclick="cropOk()"><span class="t" style="margin:0 6px 0 0">Continuar</span><svg class="i"><use href="#i-r"/></svg></button>
  </div>
 </section>
@@ -167,12 +220,16 @@ input[type=text],select{background:var(--sf);color:var(--tx);border:1px solid va
 <section id="edit" class="s">
  <header>Filtros</header>
  <div class="main"><canvas id="pv"></canvas></div>
- <div class="row"><span style="width:64px">Brilho</span><input type="range" id="br" min="-60" max="60" value="0" aria-label="Brilho"></div>
- <div class="row"><span style="width:64px">Contraste</span><input type="range" id="ct" min="-50" max="80" value="0" aria-label="Contraste"></div>
- <div class="bar" id="fb"><button data-f="orig">Original</button><button data-f="gray">Cinza</button></div>
- <div class="bar">
-  <button onclick="cur.rot++;draw()"><svg class="i"><use href="#i-rot"/></svg><span class="t">Girar</span></button>
-  <button onclick="openCrop()"><svg class="i"><use href="#i-crop"/></svg><span class="t">Recortar</span></button>
+ <div class="adjustments" aria-label="Ajustes de imagem">
+  <div class="row"><span>Brilho</span><input type="range" id="br" min="-60" max="60" value="0" aria-label="Brilho"><output id="brv" for="br">0</output></div>
+  <div class="row"><span>Contraste</span><input type="range" id="ct" min="-50" max="80" value="0" aria-label="Contraste"><output id="ctv" for="ct">0</output></div>
+ </div>
+ <div class="bar edit-tools" id="fb" aria-label="Filtros e ferramentas">
+  <button class="tool" data-f="orig" aria-pressed="true">Original</button><button class="tool" data-f="gray" aria-pressed="false">Cinza</button>
+  <button class="tool" onclick="cur.rot++;draw()"><svg class="i"><use href="#i-rot"/></svg><span>Girar</span></button>
+  <button class="tool" onclick="openCrop()"><svg class="i"><use href="#i-crop"/></svg><span>Recortar</span></button>
+ </div>
+ <div class="bar confirm-bar">
   <button class="p" onclick="confirmPage()"><svg class="i"><use href="#i-check"/></svg><span class="t">Confirmar página</span></button>
  </div>
 </section>
@@ -180,7 +237,7 @@ input[type=text],select{background:var(--sf);color:var(--tx);border:1px solid va
 <section id="exp" class="s">
  <header><button onclick="pages()" aria-label="Voltar"><svg class="i"><use href="#i-back"/></svg></button>Exportar PDF <small id="np"></small></header>
  <div class="main" style="align-items:flex-start;overflow:auto"><div class="form">
-  <label>Nome do arquivo<input type="text" id="nm"></label>
+  <label>Nome do arquivo<input type="text" id="nm" maxlength="80" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="done"></label>
   <label>Tamanho do papel<select id="pp" onchange="D.paper=this.value"><option value="a4">A4</option><option value="letter">Carta</option><option value="orig">Proporcional à imagem</option></select></label>
   <label>Qualidade da imagem<select id="ql" onchange="ls('q',this.value)"><option value="0.6">Menor arquivo</option><option value="0.8">Equilibrada</option><option value="0.92">Máxima</option></select></label>
   <button class="p" id="go" onclick="gen()"><svg class="i"><use href="#i-pdf"/></svg><span class="t">Gerar PDF</span></button>
@@ -197,12 +254,18 @@ const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
 const mk=(w,h)=>{const c=document.createElement('canvas');c.width=w;c.height=h;return c};
 const esc=s=>String(s).replace(/[&<>"']/g,c=>'&#'+c.charCodeAt(0)+';');
 function theme(t){const h=document.documentElement;t=t||(h.dataset.theme==='light'?'dark':'light');h.dataset.theme=t;
- $('#th use').setAttribute('href',t==='light'?'#i-moon':'#i-sun');document.querySelectorAll('[data-t]').forEach(b=>b.classList.toggle('on',b.dataset.t===t));ls('th',t)}
+ $('#th use').setAttribute('href',t==='light'?'#i-moon':'#i-sun');$('#th').setAttribute('aria-label',t==='light'?'Ativar tema escuro':'Ativar tema claro');$('#themeColor').content=t==='light'?'#F6F7F9':'#101114';document.querySelectorAll('[data-t]').forEach(b=>b.classList.toggle('on',b.dataset.t===t));ls('th',t)}
 theme(ls('th')||'light');
 let P=[],D=null,cur=null,sel=-1,queue=[],pdf=null,tt,scr='home';
 const SZ={a4:[595.28,841.89],letter:[612,792]};
 function show(id){scr=id;document.querySelectorAll('.s').forEach(e=>e.classList.toggle('on',e.id===id));if(id!=='cam')stopCam();}
 function toast(m){const t=$('#toast');t.textContent=m;t.style.display='block';clearTimeout(tt);tt=setTimeout(()=>t.style.display='none',4500)}
+let sheetFocus=null;
+function openSheet(){sheetFocus=document.activeElement;$('#sheet').hidden=false;requestAnimationFrame(()=>$('#sheet button').focus())}
+function closeSheet(restore=true){$('#sheet').hidden=true;if(restore&&sheetFocus&&sheetFocus.isConnected)sheetFocus.focus();sheetFocus=null}
+document.addEventListener('keydown',e=>{if($('#sheet').hidden)return;
+ if(e.key==='Escape'){e.preventDefault();closeSheet();return}
+ if(e.key==='Tab'){const bs=[...$('#sheet').querySelectorAll('button')],first=bs[0],last=bs[bs.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}}});
 function toCv(s,w,h){const k=Math.min(1,2400/Math.max(w,h)),c=mk(Math.round(w*k),Math.round(h*k));c.getContext('2d').drawImage(s,0,0,c.width,c.height);return c}
 
 /* ===== ARMAZENAMENTO: IndexedDB (imagens) + localStorage (índice leve) ===== */
@@ -217,30 +280,30 @@ async function save(){if(!D)return;const a=idx().filter(x=>x.id!==D.id);
  a.unshift({id:D.id,name:D.name,date:D.date,n:P.length,th:P[0].th});setIdx(a)}
 async function openDoc(id){const d=await tx('readonly',s=>s.get(id));if(!d)return toast('Documento não encontrado.');
  D={id:d.id,name:d.name,paper:['a4','letter','orig'].includes(d.paper)?d.paper:'a4'};P=[];
- for(const p of d.pages){const b=await createImageBitmap(p.blob);P.push({...p,src:toCv(b,b.width,b.height),isNew:0})}sel=P.length?0:-1;pages()}
+ for(const p of d.pages){const b=await createImageBitmap(p.blob);P.push({...p,src:toCv(b,b.width,b.height),isNew:0});b.close&&b.close()}sel=P.length?0:-1;pages()}
 async function delDoc(id){if(!confirm('Excluir este documento?'))return;await tx('readwrite',s=>s.delete(id));setIdx(idx().filter(x=>x.id!==id));if(D&&D.id===id){D=null;P=[]}home()}
 
 /* ===== TELAS PRINCIPAIS ===== */
 const fmt=iso=>{const d=new Date(iso),t=d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}),n=new Date(),y=new Date(n-864e5),s=x=>x.toDateString();
  return s(d)===s(n)?'Hoje, '+t:s(d)===s(y)?'Ontem, '+t:d.toLocaleDateString('pt-BR')};
-const card=d=>`<div class="rc"><button class="rt" onclick="openDoc('${d.id}')" aria-label="Abrir ${esc(d.name)}"><img src="${d.th}" alt=""><span class="bd">PDF</span></button><div class="rn"><div><b>${esc(d.name)}</b><small>${fmt(d.date)}</small></div><button class="dots" onclick="delDoc('${d.id}')" aria-label="Excluir documento"><svg class="i"><use href="#i-dots"/></svg></button></div></div>`;
+const card=d=>`<div class="rc"><button class="rt" onclick="openDoc('${d.id}')" aria-label="Abrir ${esc(d.name)}"><img src="${d.th}" alt=""><span class="bd">PDF</span></button><div class="rn"><div><b>${esc(d.name)}</b><small>${d.n} pág. · ${fmt(d.date)}</small></div><button class="dots" onclick="delDoc('${d.id}')" aria-label="Excluir ${esc(d.name)}" title="Excluir documento"><svg class="i"><use href="#i-trash"/></svg></button></div></div>`;
 function home(){show('home');const a=idx();$('#rec').innerHTML=a.map(card).join('');$('#none').hidden=!!a.length;$('#rh').hidden=!a.length}
 function startDoc(){P=[];sel=-1;const n=new Date(),p=x=>String(x).padStart(2,'0');
  D={id:n.getTime().toString(36)+Math.random().toString(36).slice(2,5),name:`documento-${n.getFullYear()}-${p(n.getMonth()+1)}-${p(n.getDate())}-${p(n.getHours())}${p(n.getMinutes())}`,paper:'a4'}}
 
 /* ===== PÁGINAS DO DOCUMENTO ===== */
 function pages(){show('pages');$('#dn').textContent=D?D.name:'';
- $('#grid').innerHTML=P.map((p,i)=>`<div class="th ${i===sel?'on':''}" onclick="sel=${i};pages()"><img src="${p.th}" alt="Página ${i+1}"><b>${i+1}</b></div>`).join('');
- $('#empty').hidden=!!P.length;$('#pb').hidden=!P.length;$('#cnt').textContent=P.length?P.length+' pág.':''}
-function mv(d){const j=sel+d;if(j<0||j>=P.length)return;[P[sel],P[j]]=[P[j],P[sel]];sel=j;save();pages()}
+ $('#grid').innerHTML=P.map((p,i)=>`<button type="button" class="th ${i===sel?'on':''}" onclick="sel=${i};pages()" aria-label="Selecionar página ${i+1}" aria-pressed="${i===sel}"><img src="${p.th}" alt=""><b>${i+1}</b></button>`).join('');
+ $('#empty').hidden=!!P.length;$('#pb').hidden=!P.length;$('#cnt').textContent=P.length?P.length+' pág.':'';$('#mvPrev').disabled=sel<=0;$('#mvNext').disabled=sel<0||sel>=P.length-1}
+function mv(d){if(sel<0)return;const j=sel+d;if(j<0||j>=P.length)return;[P[sel],P[j]]=[P[j],P[sel]];sel=j;save();pages()}
 function del(){if(sel<0||!confirm('Excluir a página '+(sel+1)+'?'))return;P.splice(sel,1);sel=Math.min(sel,P.length-1);save();pages()}
-function editSel(){if(sel<0)return toast('Toque em uma página para selecioná-la.');cur=P[sel];cur.isNew=0;cur.bak=cur.pts.map(a=>a.slice());openCrop()}
+function editSel(){if(sel<0)return toast('Toque em uma página para selecioná-la.');cur=P[sel];cur.isNew=0;openCrop()}
 function newPage(c){if(!D)startDoc();const d=detect(c,c.width,c.height);
  cur={id:Date.now()+Math.random(),src:c,pts:d.p,f:'orig',br:0,ct:0,rot:0,isNew:1};
  toast(d.ok?'Cantos detectados. Ajuste se precisar.':'Não identificamos os cantos automaticamente. Ajuste os pontos manualmente.');openCrop()}
 const after=()=>P.length?pages():home();
-function addCam(){$('#sheet').hidden=true;openCam()}
-function addImp(){$('#sheet').hidden=true;$('#file').click()}
+function addCam(){closeSheet(false);openCam()}
+function addImp(){closeSheet(false);$('#file').click()}
 function nextQ(){cur=null;queue.length?newPage(queue.shift()):after()}
 
 /* ===== IMPORTAR ===== */
@@ -250,27 +313,30 @@ $('#file').onchange=async e=>{const fs=[...e.target.files];e.target.value='';let
  if(bad)toast(bad+' arquivo(s) inválido(s) ignorado(s).');if(queue.length)newPage(queue.shift())};
 
 /* ===== CÂMERA ===== */
-let stream,facing='environment',loop,torch=0;const vid=$('#vid'),ov=$('#ov');
+let stream,facing='environment',loop,torch=0,camReq=0;const vid=$('#vid'),ov=$('#ov');
 const camBack=()=>after();
-async function openCam(){if(!D)startDoc();show('cam');
- if(!window.isSecureContext||!navigator.mediaDevices)return toast('A câmera exige HTTPS ou localhost. Use “Importar”.');
- try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:facing},width:{ideal:3840},height:{ideal:2160}},audio:false});
-  vid.srcObject=stream;await vid.play();clearInterval(loop);loop=setInterval(live,450);
-  const cp=stream.getVideoTracks()[0].getCapabilities?.()||{};$('#fl').hidden=!cp.torch}
- catch(e){toast('Não foi possível acessar a câmera. Verifique as permissões do navegador ou importe uma imagem da galeria.')}}
-function stopCam(){clearInterval(loop);stream&&stream.getTracks().forEach(t=>t.stop());stream=null;vid.srcObject=null}
+function cameraError(msg){$('#hint').textContent='Câmera indisponível';$('#camError').textContent=msg;$('#camState').hidden=false;$('#shut').disabled=true}
+async function openCam(){if(!D)startDoc();show('cam');const req=++camReq;
+ $('#camState').hidden=true;$('#shut').disabled=true;$('#fl').hidden=true;$('#hint').textContent='Acessando câmera…';
+ if(!window.isSecureContext||!navigator.mediaDevices)return cameraError('A câmera exige HTTPS. Você ainda pode importar fotos da galeria.');
+ try{const s=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:facing},width:{ideal:3840},height:{ideal:2160}},audio:false});
+  if(req!==camReq||scr!=='cam'){s.getTracks().forEach(t=>t.stop());return}
+  stream=s;vid.srcObject=stream;await vid.play();
+  if(req!==camReq||scr!=='cam'){if(stream===s)stopCam();else s.getTracks().forEach(t=>t.stop());return}
+  clearInterval(loop);loop=setInterval(live,450);const cp=stream.getVideoTracks()[0].getCapabilities?.()||{};$('#fl').hidden=!cp.torch;$('#shut').disabled=false;live()}
+ catch(e){if(req!==camReq)return;stopCam();cameraError('Verifique a permissão da câmera no navegador ou importe uma imagem da galeria.')}}
+function stopCam(){camReq++;clearInterval(loop);stream&&stream.getTracks().forEach(t=>t.stop());stream=null;vid.srcObject=null;torch=0;$('#fl').classList.remove('on');$('#fl').setAttribute('aria-pressed','false')}
 function flip(){facing=facing==='environment'?'user':'environment';stopCam();openCam()}
-async function flash(){try{torch=!torch;await stream.getVideoTracks()[0].applyConstraints({advanced:[{torch}]})}catch(_){torch=0;toast('Flash indisponível neste aparelho.')}}
-function live(){const W=vid.videoWidth,H=vid.videoHeight;if(!W)return;
- const d=detect(vid,W,H);Object.assign(ov.style,{left:vid.offsetLeft+'px',top:vid.offsetTop+'px'});
- ov.width=vid.offsetWidth;ov.height=vid.offsetHeight;const x=ov.getContext('2d'),k=ov.width/W;
- $('#hint').textContent=d.ok?'Documento detectado ✔':'Posicione o documento dentro da área';if(!d.ok)return;
- x.beginPath();d.p.forEach((a,i)=>i?x.lineTo(a[0]*k,a[1]*k):x.moveTo(a[0]*k,a[1]*k));x.closePath();
- x.fillStyle='#4C8DFF33';x.fill();x.lineWidth=4;x.strokeStyle='#4C8DFF';x.stroke()}
-async function snap(){if(!stream)return;let c;
+async function flash(){if(!stream)return;try{const next=!torch;await stream.getVideoTracks()[0].applyConstraints({advanced:[{torch:next}]});torch=next;$('#fl').classList.toggle('on',torch);$('#fl').setAttribute('aria-pressed',String(torch))}catch(_){torch=0;toast('Flash indisponível neste aparelho.')}}
+function live(){const W=vid.videoWidth,H=vid.videoHeight;if(!W)return;const cw=ov.clientWidth,ch=ov.clientHeight;if(!cw||!ch)return;
+ const d=detect(vid,W,H),ratio=Math.min(2,window.devicePixelRatio||1),bw=Math.round(cw*ratio),bh=Math.round(ch*ratio);if(ov.width!==bw||ov.height!==bh){ov.width=bw;ov.height=bh}
+ const x=ov.getContext('2d');x.setTransform(ratio,0,0,ratio,0,0);x.clearRect(0,0,cw,ch);const msg=d.ok?'Documento detectado ✔':'Posicione o documento dentro da área';if($('#hint').textContent!==msg)$('#hint').textContent=msg;if(!d.ok)return;
+ const k=Math.min(cw/W,ch/H),dx=(cw-W*k)/2,dy=(ch-H*k)/2;x.beginPath();d.p.forEach((a,i)=>i?x.lineTo(dx+a[0]*k,dy+a[1]*k):x.moveTo(dx+a[0]*k,dy+a[1]*k));x.closePath();
+ x.fillStyle='#4C8DFF33';x.fill();x.lineWidth=4;x.lineJoin='round';x.strokeStyle='#4C8DFF';x.stroke()}
+async function snap(){if(!stream||scr!=='cam')return;const req=camReq;$('#shut').disabled=true;let c;
  try{const t=stream.getVideoTracks()[0];
-  if(window.ImageCapture){try{const b=await createImageBitmap(await new ImageCapture(t).takePhoto(),{imageOrientation:'from-image'});c=toCv(b,b.width,b.height)}catch(_){}}
-  if(!c)c=toCv(vid,vid.videoWidth,vid.videoHeight);newPage(c)}catch(e){toast('Falha ao capturar a imagem.')}}
+  if(window.ImageCapture){try{const b=await createImageBitmap(await new ImageCapture(t).takePhoto(),{imageOrientation:'from-image'});c=toCv(b,b.width,b.height);b.close&&b.close()}catch(_){}}
+  if(req!==camReq)return;if(!c)c=toCv(vid,vid.videoWidth,vid.videoHeight);newPage(c)}catch(e){if(req===camReq)toast('Falha ao capturar a imagem. Tente novamente.')}finally{if(req===camReq&&scr==='cam')$('#shut').disabled=false}}
 
 /* ===== DETECÇÃO DOS CANTOS (JS puro) =====
    Reduz a imagem, limiar de Otsu (papel claro x fundo), maior região conectada
@@ -299,31 +365,34 @@ function detect(src,W,H){
  return{p:valid(p)?p:def,ok:valid(p)}}
 
 /* ===== EDITOR DE CANTOS (com lupa) ===== */
-let sc=1,drag=-1,pvc;const cc=$('#cc');
-function openCrop(){show('crop');requestAnimationFrame(()=>{const m=$('#cmain'),W=cur.src.width,H=cur.src.height;
- sc=Math.min((m.clientWidth-8)/W,(m.clientHeight-8)/H);pvc=mk(Math.round(W*sc),Math.round(H*sc));
- cc.width=pvc.width;cc.height=pvc.height;pvc.getContext('2d').drawImage(cur.src,0,0,pvc.width,pvc.height);drawCrop()})}
-function drawCrop(){const x=cc.getContext('2d');x.drawImage(pvc,0,0);const p=cur.pts.map(a=>[a[0]*sc,a[1]*sc]);
+let sc=1,drag=-1,pvc,cropRaf=0,cropReturn='pages';const cc=$('#cc');
+function fitCrop(){if(!cur||scr!=='crop')return;const m=$('#cmain'),W=cur.src.width,H=cur.src.height;
+ sc=Math.min((m.clientWidth-8)/W,(m.clientHeight-8)/H);if(!(sc>0))return;pvc=mk(Math.max(1,Math.round(W*sc)),Math.max(1,Math.round(H*sc)));
+ cc.width=pvc.width;cc.height=pvc.height;pvc.getContext('2d').drawImage(cur.src,0,0,pvc.width,pvc.height);drawCrop()}
+function openCrop(){cropReturn=scr==='edit'?'edit':'pages';cur.bak=cur.pts.map(a=>a.slice());show('crop');requestAnimationFrame(fitCrop)}
+window.addEventListener('resize',()=>{if(scr==='crop'&&drag<0){cancelAnimationFrame(cropRaf);cropRaf=requestAnimationFrame(fitCrop)}});
+function drawCrop(){if(!pvc||!cur)return;const x=cc.getContext('2d');x.drawImage(pvc,0,0);const p=cur.pts.map(a=>[a[0]*sc,a[1]*sc]),ok=valid(cur.pts),color=ok?'#4C8DFF':'#FF6B61';
  x.beginPath();p.forEach((a,i)=>i?x.lineTo(a[0],a[1]):x.moveTo(a[0],a[1]));x.closePath();
- x.fillStyle='#4C8DFF33';x.fill();x.lineWidth=3;x.strokeStyle='#4C8DFF';x.stroke();
- p.forEach(a=>{x.beginPath();x.arc(a[0],a[1],16,0,7);x.fillStyle='#ffffffaa';x.fill();x.stroke()});if(drag>=0)loupe(x)}
-/* cantos de baixo -> lupa no canto superior esquerdo; cantos de cima -> inferior esquerdo */
-function loupe(x){const L=Math.min(130,cc.width*.36),Z=3,q=cur.pts[drag],lx=8,ly=drag>1?8:cc.height-L-8,r=L/(sc*Z),cx=lx+L/2,cy=ly+L/2;
+ x.fillStyle=ok?'#4C8DFF33':'#E5483B33';x.fill();x.lineWidth=3;x.lineJoin='round';x.strokeStyle=color;x.stroke();
+ p.forEach((a,i)=>{const active=i===drag;x.beginPath();x.arc(a[0],a[1],active?21:17,0,7);x.fillStyle=active?color:'#ffffffdd';x.fill();x.lineWidth=2;x.strokeStyle='#10111488';x.stroke();x.beginPath();x.arc(a[0],a[1],5,0,7);x.fillStyle=active?'#fff':color;x.fill()});
+ const msg=ok?'Arraste os pontos até os cantos. Use a lupa para ajustar.':'Os pontos não podem se cruzar. Ajuste o recorte.';if($('#cropHint').textContent!==msg)$('#cropHint').textContent=msg;$('#cropHint').classList.toggle('bad',!ok);if(drag>=0)loupe(x)}
+/* A lupa fica no lado oposto ao ponto arrastado para não ficar sob o dedo. */
+function loupe(x){const L=Math.max(56,Math.min(140,cc.width*.4,cc.height*.4)),Z=3,q=cur.pts[drag],lx=q[0]*sc<cc.width/2?cc.width-L-8:8,ly=drag>1?8:cc.height-L-8,r=L/(sc*Z),cx=lx+L/2,cy=ly+L/2;
  x.save();x.beginPath();x.rect(lx,ly,L,L);x.clip();x.fillStyle='#000';x.fillRect(lx,ly,L,L);
  x.drawImage(cur.src,q[0]-r/2,q[1]-r/2,r,r,lx,ly,L,L);
  x.beginPath();cur.pts.forEach((a,i)=>{const X=cx+(a[0]-q[0])*sc*Z,Y=cy+(a[1]-q[1])*sc*Z;i?x.lineTo(X,Y):x.moveTo(X,Y)});x.closePath();x.lineWidth=2;x.strokeStyle='#4C8DFF';x.stroke();
  x.beginPath();x.moveTo(cx,cy-12);x.lineTo(cx,cy+12);x.moveTo(cx-12,cy);x.lineTo(cx+12,cy);x.lineWidth=1;x.strokeStyle='#fff';x.stroke();
  x.restore();x.lineWidth=3;x.strokeStyle='#4C8DFF';x.strokeRect(lx,ly,L,L)}
 const pos=e=>{const r=cc.getBoundingClientRect();return[e.clientX-r.left,e.clientY-r.top]};
-cc.onpointerdown=e=>{const[x,y]=pos(e);let bd=48;drag=-1;
+cc.onpointerdown=e=>{if(e.pointerType==='mouse'&&e.button!==0)return;e.preventDefault();const[x,y]=pos(e);let bd=e.pointerType==='touch'?56:44;drag=-1;
  cur.pts.forEach((p,i)=>{const d=Math.hypot(p[0]*sc-x,p[1]*sc-y);if(d<bd){bd=d;drag=i}});if(drag>=0){cc.setPointerCapture(e.pointerId);drawCrop()}};
-cc.onpointermove=e=>{if(drag<0)return;const[x,y]=pos(e);cur.pts[drag]=[clamp(x/sc,0,cur.src.width),clamp(y/sc,0,cur.src.height)];drawCrop()};
+cc.onpointermove=e=>{if(drag<0)return;e.preventDefault();const[x,y]=pos(e);cur.pts[drag]=[clamp(x/sc,0,cur.src.width),clamp(y/sc,0,cur.src.height)];drawCrop()};
 cc.onpointerup=cc.onpointercancel=()=>{drag=-1;drawCrop()};
 /* convexo, sem cruzamento e arestas mínimas */
 function valid(p){let s=0;for(let i=0;i<4;i++){const a=p[i],b=p[(i+1)%4],c=p[(i+2)%4],z=(b[0]-a[0])*(c[1]-b[1])-(b[1]-a[1])*(c[0]-b[0]);
  if(Math.abs(z)<1||Math.hypot(b[0]-a[0],b[1]-a[1])<20)return 0;const g=z>0?1:-1;if(s&&s!==g)return 0;s=g}return 1}
 function redetect(){const d=detect(cur.src,cur.src.width,cur.src.height);cur.pts=d.p;drawCrop();if(!d.ok)toast('Detecção automática sem confiança. Ajuste manualmente.')}
-function cropBack(){if(cur.isNew)return nextQ();cur.pts=cur.bak;pages()}
+function cropBack(){cur.pts=cur.bak.map(a=>a.slice());if(cropReturn==='edit'){show('edit');syncUI();draw()}else if(cur.isNew)nextQ();else pages()}
 function cropOk(){if(!valid(cur.pts))return toast('O recorte está inválido. Verifique se os pontos estão na ordem correta e se as linhas não se cruzam.');
  try{cur.wp=warp(cur.src,cur.pts,900)}catch(e){return toast('Falha na correção de perspectiva.')}
  show('edit');syncUI();draw()}
@@ -371,9 +440,9 @@ const render=(p,max)=>rot(filt(warp(p.src,p.pts,max),p.f,p.br,p.ct),p.rot);
 /* ===== EDIÇÃO ===== */
 const pv=$('#pv');let raf=0;
 function draw(){cancelAnimationFrame(raf);raf=requestAnimationFrame(()=>{const o=rot(filt(cur.wp,cur.f,cur.br,cur.ct),cur.rot);pv.width=o.width;pv.height=o.height;pv.getContext('2d').drawImage(o,0,0)})}
-function syncUI(){$('#br').value=cur.br;$('#ct').value=cur.ct;document.querySelectorAll('#fb button').forEach(b=>b.classList.toggle('on',b.dataset.f===cur.f))}
-document.querySelectorAll('#fb button').forEach(b=>b.onclick=()=>{cur.f=b.dataset.f;syncUI();draw()});
-$('#br').oninput=e=>{cur.br=+e.target.value;draw()};$('#ct').oninput=e=>{cur.ct=+e.target.value;draw()};
+function syncUI(){$('#br').value=cur.br;$('#ct').value=cur.ct;$('#brv').textContent=cur.br;$('#ctv').textContent=cur.ct;document.querySelectorAll('#fb [data-f]').forEach(b=>{const on=b.dataset.f===cur.f;b.classList.toggle('on',on);b.setAttribute('aria-pressed',String(on))})}
+document.querySelectorAll('#fb [data-f]').forEach(b=>b.onclick=()=>{cur.f=b.dataset.f;syncUI();draw()});
+$('#br').oninput=e=>{cur.br=+e.target.value;$('#brv').textContent=e.target.value;draw()};$('#ct').oninput=e=>{cur.ct=+e.target.value;$('#ctv').textContent=e.target.value;draw()};
 function confirmPage(){try{cur.th=render(cur,240).toDataURL('image/jpeg',.7)}catch(e){return toast('Falha ao processar a página.')}
  delete cur.wp;if(cur.isNew){P.push(cur);sel=P.length-1;cur.isNew=0}save();nextQ()}
 
@@ -397,7 +466,7 @@ async function mkPdf(paper,q,prog){const enc=new TextEncoder(),parts=[],off=[];l
  add(t+`trailer\n<</Size ${N}/Root 1 0 R>>\nstartxref\n${xr}\n%%EOF`);return new Blob(parts,{type:'application/pdf'})}
 async function gen(){const b=$('#go');b.disabled=1;
  try{const bl=await mkPdf($('#pp').value,+$('#ql').value,i=>$('#st').textContent=`Processando página ${i}/${P.length}…`);
-  D.name=$('#nm').value.trim()||D.name;D.paper=$('#pp').value;save();
+  D.name=$('#nm').value.trim().replace(/\.pdf$/i,'')||D.name;D.paper=$('#pp').value;save();
   pdf=new File([bl],D.name+'.pdf',{type:'application/pdf'});
   const u=URL.createObjectURL(pdf),a=document.createElement('a');a.href=u;a.download=pdf.name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),6e4);
   $('#st').textContent='PDF gerado ✔ ('+(pdf.size/1048576).toFixed(2)+' MB)';$('#sh').hidden=!(navigator.canShare&&navigator.canShare({files:[pdf]}))}
